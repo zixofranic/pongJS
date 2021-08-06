@@ -1,9 +1,13 @@
 /** @type {HTMLCanvasElement} */
 let canvas;
 let ctx;
-let ballX = 0;
 let gameSpeed = 30;
+let ballX = 50;
 let ballSpeedX = 10;
+let ballY = 25;
+let ballSpeedY = 10;
+let paddle1Y = 250;
+const paddleHeight = 100
 
 window.onload = function () {
     canvas = document.getElementById('gameCanvas');
@@ -12,13 +16,30 @@ window.onload = function () {
         drawscene();
         moveAll();
     }, 1000 / gameSpeed)
+    canvas.addEventListener("mousemove",
+    function (evt) {
+        let mousePos = CalculateMousePos(evt);
+        paddle1Y = mousePos.y - (paddleHeight / 2);
+    });
+}
+
+function CalculateMousePos(evt) {
+    let rec = canvas.getBoundingClientRect();
+    let root = document.documentElement;
+    let mouseX = evt.clientX - rec.left - root.scrollLeft;
+    var mouseY = evt.clientY - rec.top - root.scrollTop; 
+
+
+    return {
+        x: mouseX,
+        y: mouseY
+    }
 }
 
 function drawscene() {
-    let peddalHeight = 100
     colorRec(0, 0, canvas.width, canvas.height, 'black'); //Drawing the black background
-    colorRec(0, (canvas.height / 2) - peddalHeight / 2, 10, peddalHeight, 'white'); //drawing the left peddal
-    colorCircle(ballX, 150, 10, 'white'); //drawing the ball
+    colorRec(10, paddle1Y, 10, paddleHeight, 'white'); //drawing the left peddal
+    colorCircle(ballX, ballY, 5, 'white'); //drawing the ball
 }
 
 // reusable circle drawing function
@@ -29,14 +50,20 @@ function colorCircle(xLoc, yLoc, ballRadius, drawColor) {
     ctx.fill();
 }
 
+
 function colorRec(topX, topY, width, height, drawColor) {
     ctx.fillStyle = drawColor;
     ctx.fillRect(topX, topY, width, height);
 }
 
+
 function moveAll() {
     ballX = ballX + ballSpeedX;
     if (ballX < 0 || ballX > canvas.width) {
         ballSpeedX = -ballSpeedX;
+    }
+    ballY = ballY + ballSpeedY;
+    if (ballY < 0 || ballY > canvas.height) {
+        ballSpeedY = -ballSpeedY;
     }
 }
